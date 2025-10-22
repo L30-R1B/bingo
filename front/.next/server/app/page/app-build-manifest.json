@@ -1,0 +1,20 @@
+{
+  "pages": {
+    "/page": [
+      "static/chunks/[root-of-the-server]__45f3426f._.css",
+      "static/chunks/1da4c_next_dist_81460ef8._.js",
+      "static/chunks/bingo_front_src_6bf8364b._.js",
+      "static/chunks/bingo_front_src_app_layout_tsx_d79d2e9e._.js",
+      "static/chunks/1da4c_next_dist_client_components_builtin_global-error_1223dd1b.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_f304690c._.js",
+      "static/chunks/1da4c_next_dist_compiled_react-dom_a5f220e1._.js",
+      "static/chunks/1da4c_next_dist_compiled_next-devtools_index_b127fdef.js",
+      "static/chunks/1da4c_next_dist_compiled_8197cbe1._.js",
+      "static/chunks/1da4c_next_dist_client_a8030a58._.js",
+      "static/chunks/1da4c_next_dist_17d119b0._.js",
+      "static/chunks/1da4c_@swc_helpers_cjs_b19485be._.js",
+      "static/chunks/bingo_front_a0ff3932._.js",
+      "static/chunks/turbopack-bingo_front_d79aed18._.js"
+    ]
+  }
+}
