@@ -6,18 +6,9 @@
   "rootMainFiles": [],
   "pages": {
     "/_error": [
-      "static/chunks/3d871_next_dist_compiled_next-devtools_index_f8fdac3d.js",
-      "static/chunks/3d871_next_dist_compiled_09ff52e4._.js",
-      "static/chunks/3d871_next_dist_shared_lib_dafdf4fd._.js",
-      "static/chunks/3d871_next_dist_client_588634df._.js",
-      "static/chunks/3d871_next_dist_a8df074a._.js",
-      "static/chunks/3d871_next_error_e162cfa2.js",
-      "static/chunks/[next]_entry_page-loader_ts_ede5a84d._.js",
-      "static/chunks/3d871_react-dom_f8cbc8b5._.js",
-      "static/chunks/3d871_5123a8f6._.js",
-      "static/chunks/[root-of-the-server]__64a9a33e._.js",
-      "static/chunks/bingo_tec-web-main_pages__error_2da965e7._.js",
-      "static/chunks/turbopack-bingo_tec-web-main_pages__error_9c53453d._.js"
+      "static/chunks/668589451f5df0aa.js",
+      "static/chunks/17b1e00934bc564a.js",
+      "static/chunks/turbopack-a3d6313440527c2a.js"
     ]
   },
   "ampFirstPages": []
