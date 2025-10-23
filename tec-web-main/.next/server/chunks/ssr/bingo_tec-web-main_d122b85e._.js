@@ -83,16 +83,16 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$
 ;
 const API_BASE = 'http://100.124.95.109:3333';
 function AdminPage() {
-    const [users, setUsers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rooms, setRooms] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
-    const [editingUser, setEditingUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [editingRoom, setEditingRoom] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [showForm, setShowForm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [showDeleteModal, setShowDeleteModal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [roomToDelete, setRoomToDelete] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
         nome: '',
-        email: '',
-        senha: '',
-        is_admin: false
+        descricao: ''
     });
     const token = localStorage.getItem('bingoToken');
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
@@ -100,7 +100,7 @@ function AdminPage() {
             window.location.href = '/login';
             return;
         }
-        const checkAdminAndLoadUsers = async ()=>{
+        const checkAdminAndLoadRooms = async ()=>{
             try {
                 // Verificar se é admin
                 const profileResponse = await fetch(`${API_BASE}/auth/profile`, {
@@ -119,8 +119,8 @@ function AdminPage() {
                     window.location.href = '/login';
                     return;
                 }
-                // Carregar usuários
-                await loadUsers();
+                // Carregar salas
+                await loadRooms();
             } catch (error) {
                 console.error('Erro:', error);
                 setError('Erro ao carregar dados.');
@@ -128,99 +128,94 @@ function AdminPage() {
                 setLoading(false);
             }
         };
-        checkAdminAndLoadUsers();
+        checkAdminAndLoadRooms();
     }, [
         token
     ]);
-    const loadUsers = async ()=>{
+    const loadRooms = async ()=>{
         try {
-            const response = await fetch(`${API_BASE}/users`, {
+            const response = await fetch(`${API_BASE}/rooms`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
             if (response.ok) {
-                const usersData = await response.json();
-                setUsers(usersData);
+                const roomsData = await response.json();
+                setRooms(roomsData);
             } else {
-                setError('Erro ao carregar usuários.');
+                setError('Erro ao carregar salas.');
             }
         } catch (error) {
-            setError('Erro ao carregar usuários.');
+            setError('Erro ao carregar salas.');
         }
     };
-    const handleDeleteUser = async (id)=>{
-        if (!confirm('Tem certeza que deseja excluir este usuário?')) {
-            return;
-        }
+    const handleDeleteClick = (room)=>{
+        setRoomToDelete(room);
+        setShowDeleteModal(true);
+    };
+    const handleConfirmDelete = async ()=>{
+        if (!roomToDelete) return;
         try {
-            const response = await fetch(`${API_BASE}/users/${id}`, {
+            const response = await fetch(`${API_BASE}/rooms/${roomToDelete.id_sala}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
             if (response.ok) {
-                setUsers(users.filter((user)=>user.id !== id));
+                setRooms(rooms.filter((room)=>room.id_sala !== roomToDelete.id_sala));
+                setShowDeleteModal(false);
+                setRoomToDelete(null);
             } else {
-                alert('Erro ao excluir usuário.');
+                alert('Erro ao excluir sala.');
             }
         } catch (error) {
-            alert('Erro ao excluir usuário.');
+            alert('Erro ao excluir sala.');
         }
     };
-    const handleEditUser = (user)=>{
-        setEditingUser(user);
+    const handleCancelDelete = ()=>{
+        setShowDeleteModal(false);
+        setRoomToDelete(null);
+    };
+    const handleEditRoom = (room)=>{
+        setEditingRoom(room);
         setFormData({
-            nome: user.nome,
-            email: user.email,
-            senha: '',
-            is_admin: user.is_admin
+            nome: room.nome,
+            descricao: room.descricao || ''
         });
         setShowForm(true);
     };
-    const handleCreateUser = ()=>{
-        setEditingUser(null);
+    const handleCreateRoom = ()=>{
+        setEditingRoom(null);
         setFormData({
             nome: '',
-            email: '',
-            senha: '',
-            is_admin: false
+            descricao: ''
         });
         setShowForm(true);
     };
     const handleSubmit = async (e)=>{
         e.preventDefault();
         try {
-            const url = editingUser ? `${API_BASE}/users/${editingUser.id}` : `${API_BASE}/auth/register`;
-            const method = editingUser ? 'PATCH' : 'POST';
-            const body = {
-                nome: formData.nome,
-                email: formData.email,
-                is_admin: formData.is_admin
-            };
-            // Se estiver criando ou se a senha não estiver vazia (para edição)
-            if (!editingUser || formData.senha) {
-                body.senha = formData.senha;
-            }
+            const url = editingRoom ? `${API_BASE}/rooms/${editingRoom.id_sala}` : `${API_BASE}/rooms`;
+            const method = editingRoom ? 'PATCH' : 'POST';
             const response = await fetch(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify(formData)
             });
             if (response.ok) {
                 setShowForm(false);
-                await loadUsers();
+                await loadRooms();
             } else {
                 const errorData = await response.json();
-                alert(errorData.message || 'Erro ao salvar usuário.');
+                alert(errorData.message || 'Erro ao salvar sala.');
             }
         } catch (error) {
-            alert('Erro ao salvar usuário.');
+            alert('Erro ao salvar sala.');
         }
     };
     if (loading) {
@@ -228,7 +223,7 @@ function AdminPage() {
             children: "Carregando..."
         }, void 0, false, {
             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-            lineNumber: 176,
+            lineNumber: 169,
             columnNumber: 16
         }, this);
     }
@@ -250,7 +245,7 @@ function AdminPage() {
                                 className: "navbar-logo"
                             }, void 0, false, {
                                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                lineNumber: 184,
+                                lineNumber: 177,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -260,12 +255,12 @@ function AdminPage() {
                                     children: "Administração"
                                 }, void 0, false, {
                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                    lineNumber: 191,
+                                    lineNumber: 184,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                lineNumber: 190,
+                                lineNumber: 183,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -282,28 +277,28 @@ function AdminPage() {
                                     children: "Sair"
                                 }, void 0, false, {
                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                    lineNumber: 195,
+                                    lineNumber: 188,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                lineNumber: 194,
+                                lineNumber: 187,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                        lineNumber: 183,
+                        lineNumber: 176,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                    lineNumber: 182,
+                    lineNumber: 175,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                lineNumber: 181,
+                lineNumber: 174,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -313,22 +308,22 @@ function AdminPage() {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                         className: "title",
-                        children: "Gerenciar Usuários"
+                        children: "Gerenciar Salas"
                     }, void 0, false, {
                         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                        lineNumber: 205,
+                        lineNumber: 198,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                         variant: "primary",
-                        onClick: handleCreateUser,
+                        onClick: handleCreateRoom,
                         style: {
                             marginBottom: '20px'
                         },
-                        children: "Criar Usuário"
+                        children: "Criar Sala"
                     }, void 0, false, {
                         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                        lineNumber: 207,
+                        lineNumber: 200,
                         columnNumber: 17
                     }, this),
                     showForm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -338,24 +333,34 @@ function AdminPage() {
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            backgroundColor: 'rgba(0,0,0,0.7)',
                             display: 'flex',
                             justifyContent: 'center',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            zIndex: 1000
                         },
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             style: {
-                                backgroundColor: 'white',
-                                padding: '20px',
-                                borderRadius: '8px',
-                                width: '400px'
+                                backgroundColor: '#2d5016',
+                                padding: '30px',
+                                borderRadius: '12px',
+                                width: '90%',
+                                maxWidth: '500px',
+                                border: '2px solid #4a752c',
+                                boxShadow: '0 8px 25px rgba(0,0,0,0.5)'
                             },
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                    children: editingUser ? 'Editar Usuário' : 'Criar Usuário'
+                                    style: {
+                                        color: 'white',
+                                        marginBottom: '20px',
+                                        textAlign: 'center',
+                                        fontSize: '1.5em'
+                                    },
+                                    children: editingRoom ? 'Editar Sala' : 'Criar Nova Sala'
                                 }, void 0, false, {
                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                    lineNumber: 229,
+                                    lineNumber: 227,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -363,14 +368,20 @@ function AdminPage() {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             style: {
-                                                marginBottom: '10px'
+                                                marginBottom: '20px'
                                             },
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    children: "Nome:"
+                                                    style: {
+                                                        color: 'white',
+                                                        display: 'block',
+                                                        marginBottom: '8px',
+                                                        fontWeight: 'bold'
+                                                    },
+                                                    children: "Nome da Sala:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 232,
+                                                    lineNumber: 237,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -383,116 +394,68 @@ function AdminPage() {
                                                     required: true,
                                                     style: {
                                                         width: '100%',
-                                                        padding: '8px'
-                                                    }
+                                                        padding: '12px',
+                                                        borderRadius: '6px',
+                                                        border: '2px solid #4a752c',
+                                                        backgroundColor: '#1a3d0f',
+                                                        color: 'white',
+                                                        fontSize: '16px'
+                                                    },
+                                                    placeholder: "Digite o nome da sala"
                                                 }, void 0, false, {
                                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 233,
+                                                    lineNumber: 245,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 231,
+                                            lineNumber: 236,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             style: {
-                                                marginBottom: '10px'
+                                                marginBottom: '25px'
                                             },
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    children: "E-mail:"
+                                                    style: {
+                                                        color: 'white',
+                                                        display: 'block',
+                                                        marginBottom: '8px',
+                                                        fontWeight: 'bold'
+                                                    },
+                                                    children: "Descrição:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 242,
+                                                    lineNumber: 263,
                                                     columnNumber: 37
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                    type: "email",
-                                                    value: formData.email,
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                                                    value: formData.descricao,
                                                     onChange: (e)=>setFormData({
                                                             ...formData,
-                                                            email: e.target.value
+                                                            descricao: e.target.value
                                                         }),
-                                                    required: true,
                                                     style: {
                                                         width: '100%',
-                                                        padding: '8px'
-                                                    }
+                                                        padding: '12px',
+                                                        borderRadius: '6px',
+                                                        border: '2px solid #4a752c',
+                                                        backgroundColor: '#1a3d0f',
+                                                        color: 'white',
+                                                        fontSize: '16px',
+                                                        minHeight: '100px',
+                                                        resize: 'vertical'
+                                                    },
+                                                    placeholder: "Digite a descrição da sala (opcional)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 243,
+                                                    lineNumber: 271,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
-                                            fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 241,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            style: {
-                                                marginBottom: '10px'
-                                            },
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    children: "Senha:"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 252,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                    type: "password",
-                                                    value: formData.senha,
-                                                    onChange: (e)=>setFormData({
-                                                            ...formData,
-                                                            senha: e.target.value
-                                                        }),
-                                                    placeholder: editingUser ? "Deixe em branco para não alterar" : "",
-                                                    required: !editingUser,
-                                                    style: {
-                                                        width: '100%',
-                                                        padding: '8px'
-                                                    }
-                                                }, void 0, false, {
-                                                    fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 253,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 251,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            style: {
-                                                marginBottom: '10px'
-                                            },
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                        type: "checkbox",
-                                                        checked: formData.is_admin,
-                                                        onChange: (e)=>setFormData({
-                                                                ...formData,
-                                                                is_admin: e.target.checked
-                                                            })
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                        lineNumber: 264,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    "Administrador"
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 263,
-                                                columnNumber: 37
-                                            }, this)
-                                        }, void 0, false, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
                                             lineNumber: 262,
                                             columnNumber: 33
@@ -500,268 +463,342 @@ function AdminPage() {
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             style: {
                                                 display: 'flex',
-                                                gap: '10px'
+                                                gap: '15px',
+                                                justifyContent: 'center'
                                             },
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                     type: "submit",
                                                     variant: "primary",
-                                                    children: "Salvar"
-                                                }, void 0, false, {
+                                                    style: {
+                                                        backgroundColor: '#4a752c',
+                                                        border: 'none',
+                                                        padding: '12px 24px',
+                                                        fontSize: '16px'
+                                                    },
+                                                    children: [
+                                                        editingRoom ? 'Atualizar' : 'Criar',
+                                                        " Sala"
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 273,
+                                                    lineNumber: 289,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                     type: "button",
                                                     variant: "secondary",
                                                     onClick: ()=>setShowForm(false),
+                                                    style: {
+                                                        backgroundColor: 'transparent',
+                                                        border: '2px solid #4a752c',
+                                                        color: 'white',
+                                                        padding: '12px 24px',
+                                                        fontSize: '16px'
+                                                    },
                                                     children: "Cancelar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                    lineNumber: 276,
+                                                    lineNumber: 301,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 272,
+                                            lineNumber: 288,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                    lineNumber: 230,
+                                    lineNumber: 235,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                            lineNumber: 223,
+                            lineNumber: 218,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                        lineNumber: 212,
+                        lineNumber: 206,
                         columnNumber: 21
                     }, this),
-                    error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    showDeleteModal && roomToDelete && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         style: {
-                            color: 'red'
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            zIndex: 1000
                         },
-                        children: error
-                    }, void 0, false, {
-                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                        lineNumber: 285,
-                        columnNumber: 27
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
-                        style: {
-                            width: '100%',
-                            borderCollapse: 'collapse'
-                        },
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            style: {
+                                backgroundColor: '#2d5016',
+                                padding: '30px',
+                                borderRadius: '12px',
+                                width: '90%',
+                                maxWidth: '400px',
+                                border: '2px solid #4a752c',
+                                boxShadow: '0 8px 25px rgba(0,0,0,0.5)',
+                                textAlign: 'center'
+                            },
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                    style: {
+                                        color: 'white',
+                                        marginBottom: '15px',
+                                        fontSize: '1.3em'
+                                    },
+                                    children: "Confirmar Exclusão"
+                                }, void 0, false, {
+                                    fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                                    lineNumber: 345,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    style: {
+                                        color: 'white',
+                                        marginBottom: '25px',
+                                        fontSize: '16px',
+                                        lineHeight: '1.5'
+                                    },
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                            style: {
-                                                border: '1px solid #ddd',
-                                                padding: '8px'
-                                            },
-                                            children: "ID"
-                                        }, void 0, false, {
+                                        "Tem certeza que deseja excluir a sala",
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 290,
-                                            columnNumber: 29
+                                            lineNumber: 358,
+                                            columnNumber: 70
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                            style: {
-                                                border: '1px solid #ddd',
-                                                padding: '8px'
-                                            },
-                                            children: "Nome"
-                                        }, void 0, false, {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                            children: [
+                                                '"',
+                                                roomToDelete.nome,
+                                                '"'
+                                            ]
+                                        }, void 0, true, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 291,
-                                            columnNumber: 29
+                                            lineNumber: 359,
+                                            columnNumber: 33
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                        "?"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                                    lineNumber: 352,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    style: {
+                                        display: 'flex',
+                                        gap: '15px',
+                                        justifyContent: 'center'
+                                    },
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                            variant: "primary",
+                                            onClick: handleConfirmDelete,
                                             style: {
-                                                border: '1px solid #ddd',
-                                                padding: '8px'
+                                                backgroundColor: '#d32f2f',
+                                                border: 'none',
+                                                padding: '12px 24px',
+                                                fontSize: '16px'
                                             },
-                                            children: "E-mail"
+                                            children: "Confirmar Exclusão"
                                         }, void 0, false, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 292,
-                                            columnNumber: 29
+                                            lineNumber: 362,
+                                            columnNumber: 33
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                            variant: "secondary",
+                                            onClick: handleCancelDelete,
                                             style: {
-                                                border: '1px solid #ddd',
-                                                padding: '8px'
+                                                backgroundColor: 'transparent',
+                                                border: '2px solid #4a752c',
+                                                color: 'white',
+                                                padding: '12px 24px',
+                                                fontSize: '16px'
                                             },
-                                            children: "Admin"
+                                            children: "Cancelar"
                                         }, void 0, false, {
                                             fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 293,
-                                            columnNumber: 29
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                            style: {
-                                                border: '1px solid #ddd',
-                                                padding: '8px'
-                                            },
-                                            children: "Saldo"
-                                        }, void 0, false, {
-                                            fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 294,
-                                            columnNumber: 29
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                            style: {
-                                                border: '1px solid #ddd',
-                                                padding: '8px'
-                                            },
-                                            children: "Ações"
-                                        }, void 0, false, {
-                                            fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                            lineNumber: 295,
-                                            columnNumber: 29
+                                            lineNumber: 374,
+                                            columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                    lineNumber: 289,
-                                    columnNumber: 25
+                                    lineNumber: 361,
+                                    columnNumber: 29
                                 }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                lineNumber: 288,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
-                                children: users.map((user)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                            lineNumber: 335,
+                            columnNumber: 25
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                        lineNumber: 323,
+                        columnNumber: 21
+                    }, this),
+                    error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            color: 'red',
+                            textAlign: 'center',
+                            marginBottom: '20px'
+                        },
+                        children: error
+                    }, void 0, false, {
+                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                        lineNumber: 392,
+                        columnNumber: 27
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                            gap: '25px',
+                            marginTop: '20px'
+                        },
+                        children: rooms.map((room)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                style: {
+                                    backgroundColor: '#1a5f1a',
+                                    padding: '25px',
+                                    borderRadius: '12px',
+                                    color: 'white',
+                                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '15px',
+                                    border: '2px solid #2d7a2d',
+                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                    cursor: 'pointer'
+                                },
+                                onMouseEnter: (e)=>{
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.4)';
+                                },
+                                onMouseLeave: (e)=>{
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
+                                },
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                        style: {
+                                            margin: 0,
+                                            fontSize: '1.3em',
+                                            textAlign: 'center',
+                                            fontWeight: 'bold'
+                                        },
+                                        children: room.nome
+                                    }, void 0, false, {
+                                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                                        lineNumber: 423,
+                                        columnNumber: 29
+                                    }, this),
+                                    room.descricao && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        style: {
+                                            margin: 0,
+                                            opacity: 0.9,
+                                            textAlign: 'center',
+                                            lineHeight: '1.4'
+                                        },
+                                        children: room.descricao
+                                    }, void 0, false, {
+                                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                                        lineNumber: 432,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        style: {
+                                            display: 'flex',
+                                            gap: '12px',
+                                            marginTop: 'auto',
+                                            justifyContent: 'center'
+                                        },
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                                variant: "primary",
+                                                onClick: ()=>handleEditRoom(room),
                                                 style: {
-                                                    border: '1px solid #ddd',
-                                                    padding: '8px'
+                                                    backgroundColor: '#4a752c',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    padding: '10px 16px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '14px'
                                                 },
-                                                children: user.id
+                                                children: "Editar"
                                             }, void 0, false, {
                                                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 301,
+                                                lineNumber: 447,
                                                 columnNumber: 33
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                                variant: "secondary",
+                                                onClick: ()=>handleDeleteClick(room),
                                                 style: {
-                                                    border: '1px solid #ddd',
-                                                    padding: '8px'
+                                                    backgroundColor: 'transparent',
+                                                    color: '#ff6b6b',
+                                                    border: '1px solid #ff6b6b',
+                                                    padding: '10px 16px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '14px'
                                                 },
-                                                children: user.nome
+                                                children: "Excluir"
                                             }, void 0, false, {
                                                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 302,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                style: {
-                                                    border: '1px solid #ddd',
-                                                    padding: '8px'
-                                                },
-                                                children: user.email
-                                            }, void 0, false, {
-                                                fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 303,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                style: {
-                                                    border: '1px solid #ddd',
-                                                    padding: '8px'
-                                                },
-                                                children: user.is_admin ? 'Sim' : 'Não'
-                                            }, void 0, false, {
-                                                fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 304,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                style: {
-                                                    border: '1px solid #ddd',
-                                                    padding: '8px'
-                                                },
-                                                children: [
-                                                    "R$ ",
-                                                    user.saldo?.toFixed(2) || '0.00'
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 305,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                style: {
-                                                    border: '1px solid #ddd',
-                                                    padding: '8px'
-                                                },
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                        variant: "primary",
-                                                        onClick: ()=>handleEditUser(user),
-                                                        style: {
-                                                            marginRight: '5px'
-                                                        },
-                                                        children: "Editar"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                        lineNumber: 307,
-                                                        columnNumber: 37
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$src$2f$app$2f$components$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                        variant: "secondary",
-                                                        onClick: ()=>handleDeleteUser(user.id),
-                                                        children: "Excluir"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                        lineNumber: 310,
-                                                        columnNumber: 37
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                                lineNumber: 306,
+                                                lineNumber: 461,
                                                 columnNumber: 33
                                             }, this)
                                         ]
-                                    }, user.id, true, {
+                                    }, void 0, true, {
                                         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                        lineNumber: 300,
+                                        lineNumber: 441,
                                         columnNumber: 29
-                                    }, this))
-                            }, void 0, false, {
+                                    }, this)
+                                ]
+                            }, room.id_sala, true, {
                                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                                lineNumber: 298,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
+                                lineNumber: 401,
+                                columnNumber: 25
+                            }, this))
+                    }, void 0, false, {
                         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                        lineNumber: 287,
+                        lineNumber: 394,
                         columnNumber: 17
+                    }, this),
+                    rooms.length === 0 && !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$bingo$2f$tec$2d$web$2d$main$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            textAlign: 'center',
+                            color: '#666',
+                            marginTop: '50px',
+                            fontSize: '18px'
+                        },
+                        children: 'Nenhuma sala cadastrada. Clique em "Criar Sala" para adicionar a primeira.'
+                    }, void 0, false, {
+                        fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
+                        lineNumber: 481,
+                        columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-                lineNumber: 204,
+                lineNumber: 197,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/bingo/tec-web-main/src/app/admin/page.tsx",
-        lineNumber: 180,
+        lineNumber: 173,
         columnNumber: 9
     }, this);
 }

@@ -1,5 +1,12 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/admin/games/page": "app/admin/games/page.js",
   "/admin/page": "app/admin/page.js",
-  "/login/page": "app/login/page.js"
+  "/admin/prizes/page": "app/admin/prizes/page.js",
+  "/admin/rooms/page": "app/admin/rooms/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/register/page": "app/register/page.js",
+  "/rooms/page": "app/rooms/page.js"
 }

@@ -7,10 +7,12 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/auth/login`, {
@@ -48,11 +50,14 @@ export default function LoginForm() {
           setError('Erro ao carregar perfil do usuário.');
         }
       } else {
-        setError('E-mail ou senha inválidos.');
+        const errorData = await response.json();
+        setError(errorData.message || 'E-mail ou senha inválidos.');
       }
     } catch (error) {
       console.error('Erro no login:', error);
       setError('Erro ao fazer login. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,10 +71,11 @@ export default function LoginForm() {
           type="email"
           id="email"
           className="form-input"
-          placeholder="E-mail"
+          placeholder="seu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
@@ -81,21 +87,43 @@ export default function LoginForm() {
           type="password"
           id="password"
           className="form-input"
-          placeholder="Senha"
+          placeholder="Sua senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
-      {error && <div className="error-message" style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
+      {error && (
+        <div className="error-message" style={{ 
+          color: 'red', 
+          textAlign: 'center', 
+          marginBottom: '15px',
+          padding: '10px',
+          backgroundColor: '#ffe6e6',
+          borderRadius: '5px'
+        }}>
+          {error}
+        </div>
+      )}
 
-      <div className="forgot-password login-signup-link">
-        Esqueceu sua senha?
+      <div className="forgot-password" style={{ textAlign: 'right', marginBottom: '20px' }}>
+        <a href="#" className="login-signup-link" style={{ fontSize: '14px' }}>
+          Esqueceu sua senha?
+        </a>
       </div>
 
-      <button type="submit" className="login-button">
-        Entrar
+      <button 
+        type="submit" 
+        className="login-button"
+        disabled={loading}
+        style={{ 
+          opacity: loading ? 0.7 : 1,
+          cursor: loading ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {loading ? 'Entrando...' : 'Entrar'}
       </button>
     </form>
   );

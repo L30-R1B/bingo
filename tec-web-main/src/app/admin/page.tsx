@@ -2,45 +2,29 @@
 
 import { useEffect, useState } from 'react';
 import Button from "@/app/components/button";
+import { useRouter } from 'next/navigation';
 
-const API_BASE = 'http://100.124.95.109:3333';
-
-interface User {
-    id: number;
-    nome: string;
-    email: string;
-    is_admin: boolean;
-    saldo: number;
-}
-
-export default function AdminPage() {
-    const [users, setUsers] = useState<User[]>([]);
+export default function AdminDashboard() {
+    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [editingUser, setEditingUser] = useState<User | null>(null);
-    const [showForm, setShowForm] = useState(false);
-    const [formData, setFormData] = useState({
-        nome: '',
-        email: '',
-        senha: '',
-        is_admin: false
-    });
-
-    const token = localStorage.getItem('bingoToken');
+    const router = useRouter();
 
     useEffect(() => {
-        if (!token) {
-            window.location.href = '/login';
-            return;
-        }
+        // Acessar localStorage apenas no cliente
+        const storedToken = localStorage.getItem('bingoToken');
+        setToken(storedToken);
 
-        const checkAdminAndLoadUsers = async () => {
+        const checkAdmin = async () => {
+            if (!storedToken) {
+                window.location.href = '/login';
+                return;
+            }
+
             try {
-                // Verificar se é admin
-                const profileResponse = await fetch(`${API_BASE}/auth/profile`, {
+                const profileResponse = await fetch('http://100.124.95.109:3333/auth/profile', {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${storedToken}`
                     }
                 });
 
@@ -54,122 +38,24 @@ export default function AdminPage() {
                     window.location.href = '/login';
                     return;
                 }
-
-                // Carregar usuários
-                await loadUsers();
             } catch (error) {
                 console.error('Erro:', error);
-                setError('Erro ao carregar dados.');
+                window.location.href = '/login';
             } finally {
                 setLoading(false);
             }
         };
 
-        checkAdminAndLoadUsers();
-    }, [token]);
+        checkAdmin();
+    }, []);
 
-    const loadUsers = async () => {
-        try {
-            const response = await fetch(`${API_BASE}/users`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const usersData = await response.json();
-                setUsers(usersData);
-            } else {
-                setError('Erro ao carregar usuários.');
-            }
-        } catch (error) {
-            setError('Erro ao carregar usuários.');
-        }
+    const handleNavigation = (path: string) => {
+        router.push(`/admin/${path}`);
     };
 
-    const handleDeleteUser = async (id: number) => {
-        if (!confirm('Tem certeza que deseja excluir este usuário?')) {
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BASE}/users/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                setUsers(users.filter(user => user.id !== id));
-            } else {
-                alert('Erro ao excluir usuário.');
-            }
-        } catch (error) {
-            alert('Erro ao excluir usuário.');
-        }
-    };
-
-    const handleEditUser = (user: User) => {
-        setEditingUser(user);
-        setFormData({
-            nome: user.nome,
-            email: user.email,
-            senha: '', // Senha em branco, pois não queremos alterar a menos que seja explicitado
-            is_admin: user.is_admin
-        });
-        setShowForm(true);
-    };
-
-    const handleCreateUser = () => {
-        setEditingUser(null);
-        setFormData({
-            nome: '',
-            email: '',
-            senha: '',
-            is_admin: false
-        });
-        setShowForm(true);
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const url = editingUser ? `${API_BASE}/users/${editingUser.id}` : `${API_BASE}/auth/register`;
-            const method = editingUser ? 'PATCH' : 'POST';
-
-            const body: any = {
-                nome: formData.nome,
-                email: formData.email,
-                is_admin: formData.is_admin
-            };
-
-            // Se estiver criando ou se a senha não estiver vazia (para edição)
-            if (!editingUser || formData.senha) {
-                body.senha = formData.senha;
-            }
-
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (response.ok) {
-                setShowForm(false);
-                await loadUsers();
-            } else {
-                const errorData = await response.json();
-                alert(errorData.message || 'Erro ao salvar usuário.');
-            }
-        } catch (error) {
-            alert('Erro ao salvar usuário.');
-        }
+    const handleLogout = () => {
+        localStorage.removeItem('bingoToken');
+        window.location.href = '/login';
     };
 
     if (loading) {
@@ -188,133 +74,148 @@ export default function AdminPage() {
                         />
 
                         <div className="navbar-links">
-                            <a className="nav-links">Administração</a>
+                            <a className="nav-links">Painel de Administração</a>
                         </div>
 
                         <div style={{ marginLeft: "auto", paddingRight: "40px" }}>
-                            <Button variant="primary" onClick={() => {
-                                localStorage.removeItem('bingoToken');
-                                window.location.href = '/login';
-                            }}>Sair</Button>
+                            <Button variant="primary" onClick={handleLogout}>
+                                Sair
+                            </Button>
                         </div>
                     </div>
                 </nav>
             </header>
 
-            <main style={{ padding: '20px' }}>
-                <h1 className="title">Gerenciar Usuários</h1>
-
-                <Button variant="primary" onClick={handleCreateUser} style={{ marginBottom: '20px' }}>
-                    Criar Usuário
-                </Button>
-
-                {showForm && (
+            <main style={{ 
+                padding: '40px 20px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '60vh'
+            }}>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '30px',
+                    width: '100%',
+                    maxWidth: '900px'
+                }}>
                     <div style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0,0,0,0.5)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}>
-                        <div style={{
-                            backgroundColor: 'white',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            width: '400px'
-                        }}>
-                            <h2>{editingUser ? 'Editar Usuário' : 'Criar Usuário'}</h2>
-                            <form onSubmit={handleSubmit}>
-                                <div style={{ marginBottom: '10px' }}>
-                                    <label>Nome:</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nome}
-                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        required
-                                        style={{ width: '100%', padding: '8px' }}
-                                    />
-                                </div>
-                                <div style={{ marginBottom: '10px' }}>
-                                    <label>E-mail:</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        required
-                                        style={{ width: '100%', padding: '8px' }}
-                                    />
-                                </div>
-                                <div style={{ marginBottom: '10px' }}>
-                                    <label>Senha:</label>
-                                    <input
-                                        type="password"
-                                        value={formData.senha}
-                                        onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                                        placeholder={editingUser ? "Deixe em branco para não alterar" : ""}
-                                        required={!editingUser}
-                                        style={{ width: '100%', padding: '8px' }}
-                                    />
-                                </div>
-                                <div style={{ marginBottom: '10px' }}>
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_admin}
-                                            onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
-                                        />
-                                        Administrador
-                                    </label>
-                                </div>
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <Button type="submit" variant="primary">
-                                        Salvar
-                                    </Button>
-                                    <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>
-                                        Cancelar
-                                    </Button>
-                                </div>
-                            </form>
-                        </div>
+                        backgroundColor: '#1a5f1a',
+                        padding: '40px 30px',
+                        borderRadius: '12px',
+                        color: 'white',
+                        textAlign: 'center',
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                        border: '2px solid #2d7a2d',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                    }}
+                    onClick={() => handleNavigation('users')}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
+                    }}
+                    >
+                        <h3 style={{ margin: '0 0 15px 0', fontSize: '1.5em' }}>
+                            👥 Gerenciar Usuários
+                        </h3>
+                        <p style={{ margin: 0, opacity: 0.9 }}>
+                            Visualize, edite e gerencie usuários do sistema
+                        </p>
                     </div>
-                )}
 
-                {error && <div style={{ color: 'red' }}>{error}</div>}
+                    <div style={{
+                        backgroundColor: '#1a5f1a',
+                        padding: '40px 30px',
+                        borderRadius: '12px',
+                        color: 'white',
+                        textAlign: 'center',
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                        border: '2px solid #2d7a2d',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                    }}
+                    onClick={() => handleNavigation('rooms')}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
+                    }}
+                    >
+                        <h3 style={{ margin: '0 0 15px 0', fontSize: '1.5em' }}>
+                            🏠 Gerenciar Salas
+                        </h3>
+                        <p style={{ margin: 0, opacity: 0.9 }}>
+                            Crie, edite e remova salas de bingo
+                        </p>
+                    </div>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                        <tr>
-                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>ID</th>
-                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Nome</th>
-                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>E-mail</th>
-                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Admin</th>
-                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Saldo</th>
-                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map(user => (
-                            <tr key={user.id}>
-                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.id}</td>
-                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.nome}</td>
-                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.email}</td>
-                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.is_admin ? 'Sim' : 'Não'}</td>
-                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>R$ {user.saldo?.toFixed(2) || '0.00'}</td>
-                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>
-                                    <Button variant="primary" onClick={() => handleEditUser(user)} style={{ marginRight: '5px' }}>
-                                        Editar
-                                    </Button>
-                                    <Button variant="secondary" onClick={() => handleDeleteUser(user.id)}>
-                                        Excluir
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                    <div style={{
+                        backgroundColor: '#1a5f1a',
+                        padding: '40px 30px',
+                        borderRadius: '12px',
+                        color: 'white',
+                        textAlign: 'center',
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                        border: '2px solid #2d7a2d',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                    }}
+                    onClick={() => handleNavigation('games')}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
+                    }}
+                    >
+                        <h3 style={{ margin: '0 0 15px 0', fontSize: '1.5em' }}>
+                            🎮 Gerenciar Jogos
+                        </h3>
+                        <p style={{ margin: 0, opacity: 0.9 }}>
+                            Configure e monitore jogos de bingo ativos
+                        </p>
+                    </div>
+
+                    <div style={{
+                        backgroundColor: '#1a5f1a',
+                        padding: '40px 30px',
+                        borderRadius: '12px',
+                        color: 'white',
+                        textAlign: 'center',
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                        border: '2px solid #2d7a2d',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                    }}
+                    onClick={() => handleNavigation('prizes')}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
+                    }}
+                    >
+                        <h3 style={{ margin: '0 0 15px 0', fontSize: '1.5em' }}>
+                            🏆 Gerenciar Prêmios
+                        </h3>
+                        <p style={{ margin: 0, opacity: 0.9 }}>
+                            Defina e gerencie prêmios dos jogos
+                        </p>
+                    </div>
+                </div>
             </main>
         </div>
     );

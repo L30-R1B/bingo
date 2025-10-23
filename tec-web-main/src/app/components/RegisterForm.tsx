@@ -7,14 +7,15 @@ export default function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/auth/register`, {
@@ -26,7 +27,7 @@ export default function RegisterForm() {
           nome: name,
           email: email,
           senha: password,
-          is_admin: isAdmin
+          is_admin: false // Removido a opção do usuário escolher ser admin
         })
       });
 
@@ -36,7 +37,6 @@ export default function RegisterForm() {
         setName("");
         setEmail("");
         setPassword("");
-        setIsAdmin(false);
         // Redirecionar para login após 2 segundos
         setTimeout(() => {
           window.location.href = '/login';
@@ -48,6 +48,8 @@ export default function RegisterForm() {
     } catch (error) {
       console.error('Erro no registro:', error);
       setError('Erro ao criar conta. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,16 +57,17 @@ export default function RegisterForm() {
     <form className="login-form" onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="name" className="form-label">
-          Nome
+          Nome Completo
         </label>
         <input
           type="text"
           id="name"
           className="form-input"
-          placeholder="Nome"
+          placeholder="Seu nome completo"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
@@ -76,10 +79,11 @@ export default function RegisterForm() {
           type="email"
           id="email"
           className="form-input"
-          placeholder="E-mail"
+          placeholder="seu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
@@ -91,32 +95,51 @@ export default function RegisterForm() {
           type="password"
           id="password"
           className="form-input"
-          placeholder="Senha"
+          placeholder="Crie uma senha segura"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={loading}
+          minLength={6}
         />
       </div>
 
-      <div className="form-group">
-        <div className="checkbox-group">
-          <input
-            type="checkbox"
-            id="isAdmin"
-            checked={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.checked)}
-          />
-          <label htmlFor="isAdmin" className="form-label">
-            Conta de administrador
-          </label>
+      {error && (
+        <div className="error-message" style={{ 
+          color: 'red', 
+          textAlign: 'center', 
+          marginBottom: '15px',
+          padding: '10px',
+          backgroundColor: '#ffe6e6',
+          borderRadius: '5px'
+        }}>
+          {error}
         </div>
-      </div>
+      )}
 
-      {error && <div className="error-message" style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
-      {success && <div className="success-message" style={{ color: 'green', textAlign: 'center' }}>{success}</div>}
+      {success && (
+        <div className="success-message" style={{ 
+          color: 'green', 
+          textAlign: 'center', 
+          marginBottom: '15px',
+          padding: '10px',
+          backgroundColor: '#e6ffe6',
+          borderRadius: '5px'
+        }}>
+          {success}
+        </div>
+      )}
 
-      <button type="submit" className="login-button">
-        Criar Conta
+      <button 
+        type="submit" 
+        className="login-button"
+        disabled={loading}
+        style={{ 
+          opacity: loading ? 0.7 : 1,
+          cursor: loading ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {loading ? 'Criando conta...' : 'Criar Conta'}
       </button>
     </form>
   );

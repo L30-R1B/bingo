@@ -8,7 +8,7 @@ const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, new platform_fastify_1.FastifyAdapter());
     app.enableCors({
-        origin: '*',
+        origin: ['http://localhost:3000', 'http://192.168.0.127:3000'],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         credentials: true,
     });
