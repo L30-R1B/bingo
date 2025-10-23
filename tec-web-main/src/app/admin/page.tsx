@@ -21,7 +21,7 @@ export default function AdminDashboard() {
             }
 
             try {
-                const profileResponse = await fetch('http://100.124.95.109:3333/auth/profile', {
+                const profileResponse = await fetch('http://localhost:3333/auth/profile', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${storedToken}`

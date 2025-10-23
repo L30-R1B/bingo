@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Button from "@/app/components/button";
 import { useRouter } from 'next/navigation';
 
-const API_BASE = 'http://100.124.95.109:3333';
+const API_BASE = 'http://localhost:3333';
 
 interface Room {
     id_sala: number;
